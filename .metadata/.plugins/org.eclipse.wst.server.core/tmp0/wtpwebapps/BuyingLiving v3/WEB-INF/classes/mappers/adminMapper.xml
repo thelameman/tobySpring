@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.buyingliving.app.persistence.AdminDAO">
+	<select id="approveBrokerList" resultType="Broker">
+		select * from broker
+		where approval = 'N' 
+	</select>
+
+	<select id="approvePropertyList" resultType="Property_Map">
+		select * from
+		property_total where approval = 'N' order by propertyNo desc
+	</select>
+
+	<select id="selectPicture" resultType="Pictures">
+		select * from pictures where brokerId = #{brokerId}
+	</select>
+
+	<update id="approveBroker" parameterType="String">
+		update broker set
+		approval = 'Y' where brokerId = #{brokerId}
+	</update>
+
+	<update id="approveProperty" parameterType="int">
+		update property_total
+		set
+		approval = 'Y' where propertyNo = #{propertyNo}
+	</update>
+	
+	<select id="selectQnAList" resultType="Board">
+		select * from board where category = 'qnaBoard' and replyCount = 0 order by boardNo desc
+	</select>
+	
+	
+	
+</mapper>

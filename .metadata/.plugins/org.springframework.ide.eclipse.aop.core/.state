@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<aop-reference-model>
+<aop-project name="BuyingLiving v3">
+<aspect-definition advice-class-name="com.buyingliving.app.aspect.MyAspect" advice-method-name="before(org.aspectj.lang.JoinPoint)" advice-type="BEFORE" aspect-end-line-number="21" aspect-name="myAspect" aspect-start-line-number="21" factory-id="org.springframework.ide.eclipse.aop.core.annotationAspectDefinitionElementFactory" file="/BuyingLiving v3/src/main/webapp/WEB-INF/spring/root-context.xml" pointcut-expression="execution(* updateProperty(com.buyingliving.vo.Property_total))" proxy-target-class="false">
+<aop-reference advice-type="BEFORE" bean="1:BeansModel|2:BuyingLiving v3|3:src/main/webapp/WEB-INF/spring/appServlet/servlet-context.xml|7:beans:beans:8|8:propertyController:8" bean-file="/BuyingLiving v3/src/main/webapp/WEB-INF/spring/appServlet/servlet-context.xml" bean-start-line="8" factory-id="org.springframework.ide.eclipse.aop.core.aopReferenceElementFactory" file="/BuyingLiving v3/src/main/webapp/WEB-INF/spring/appServlet/servlet-context.xml" source="=BuyingLiving v3/src\/main\/java&lt;com.buyingliving.app.aspect{MyAspect.java[MyAspect~before~QJoinPoint;" source-start-line="12" target="=BuyingLiving v3/src\/main\/java&lt;com.buyingliving.app.controller{PropertyController.java[PropertyController~updateProperty~QProperty_total;" target-start-line="104"/>
+</aspect-definition>
+</aop-project>
+<aop-project name="spring31-2.3.3-set"/>
+<aop-project name="spring31-6.6.4"/>
+<aop-project name="spring31-6.5.3"/>
+<aop-project name="spring31-7.5.2"/>
+<aop-project name="spring31-7.6.1"/>
+<aop-project name="spring31-7.6.3"/>
+<aop-project name="spring31-4.final"/>
+</aop-reference-model>

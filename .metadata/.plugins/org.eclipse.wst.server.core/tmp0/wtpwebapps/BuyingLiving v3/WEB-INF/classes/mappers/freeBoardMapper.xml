@@ -1,0 +1,165 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.buyingliving.app.persistence.FreeBoardDAO">
+	<!-- 게시판 등록 -->
+	<!-- 고객 타입은 임의로 지정해 놓은 상태 -->
+	<insert id="insertBoard" parameterType="Board">
+		insert into board 
+		(boardNo, category, title, userId, userType, boardRegDate, boardText)
+		values (seq_boardNo.nextval, #{category}, #{title}, #{userId}, 'customer', sysdate, #{boardText})
+	</insert>
+	
+	<!-- 총 게시글 수 가져오기 -->
+	<select id="allBoardCount" parameterType="hashmap" resultType="int">
+		select count(*) from board
+			where category= 'freeBoard' 
+		  <if test="searchField != null">
+			and
+			<if test="!searchField.equals('all')">
+				${searchField} like '%'||#{searchText}||'%'
+			</if>
+		  	<if test="searchField.equals('all')">
+				(title like '%'||#{searchText}||'%'
+				or boardtext like '%'||#{searchText}||'%'
+				or userid like '%'||#{searchText}||'%')
+			</if>  
+		</if>  
+	</select>
+	
+	<!-- 내가 쓴 글 가져오기 -->
+	<select id="selectMyBoard" parameterType="String" resultType="Board">
+		select * from board where userId = #{userId} order by boardNo desc
+	 
+	</select>
+	
+	<!-- 게시글 페이징 -->
+	<select id="allBoardList" parameterType="hashmap" resultType="Board">
+	select AAA.*
+	from(
+		select 
+			count(*) over() as total_count, AA.* 
+				from(
+	 				select
+	 					row_number() over (order by boardno desc) rnum,
+	 					boardno,
+	 					title,
+	 					userid,
+	 					hitcount,
+	 					boardregdate,
+	 					replycount
+	 						from board
+							where category= 'freeBoard' 
+	 	<if test="searchField != null">
+							and
+			<if test="!searchField.equals('all')">
+				${searchField} like '%'||#{searchText}||'%'
+			</if>
+		  	<if test="searchField.equals('all')">
+				(title like '%'||#{searchText}||'%'
+				or boardtext like '%'||#{searchText}||'%'
+				or userid like '%'||#{searchText}||'%')
+			</if>  
+		</if>  
+	 							
+				)AA
+	)AAA
+	</select>
+	
+	<!-- 게시글 상세 보기 -->
+	<select id="searchBoard" parameterType="int" resultType="Board">
+	select * from board 
+	where boardNo = #{boardNo} and category = 'freeBoard'
+	</select>
+	
+	<!-- 게시글 삭제하기 -->
+	<delete id="deleteBoard" parameterType="map">
+	delete from board
+	where boardNo = #{boardNo} and category = #{category}
+	</delete>
+	
+	<!-- 게시글 수정하기 -->
+	<update id="updateBoard" parameterType="Board">
+	update board
+	set title = #{title}, boardtext = #{boardText}, hitcount = #{hitCount} , replyCount = #{replyCount}
+	where boardno = #{boardNo} and category = #{category}
+	</update>
+	
+	<!-- baord 의 boardNo 가져오기 -->
+	<select id="selectSeq" parameterType="Board" resultType="int">
+	select boardNo from board
+	where 
+	title = #{title} and userId = #{userId} and boardText= #{boardText} and category= #{category}
+	</select>
+	
+	<!-- 사진 등록 하기 -->
+	<insert id="insertPicture" parameterType="Pictures">
+		insert into pictures(picNo, category, pic, pic_temp
+		<choose>
+			<when test="boardNo != 0">
+				, boardNo 
+			</when>
+			<when test="brokerId != null">
+				, brokerId
+			</when>
+		</choose>
+		)
+		values(seq_pic.nextval, #{category}, #{pic}, #{pic_temp}
+		<choose>
+			<when test="boardNo != 0">
+				, #{boardNo} 
+			</when>
+			<when test="brokerId != null">
+				, #{brokerId}
+			</when>
+		</choose>
+		)
+		
+		
+	</insert>
+	
+	 <!-- 사진 가져오기 -->
+	<select id="selectPicture" parameterType="int" resultType="Pictures">
+		select * from pictures where boardNo = #{boardNo} and category = 'freeBoard'
+	</select>
+	
+	<!-- 사진 지우기 -->
+	<delete id="deletePicture" parameterType="map">
+	 delete pictures 
+	 where
+      <if test="picNo > 0">
+		picNo = #{picNo} and
+	  </if>
+	   	boardNo = #{boardNo} and category = #{category}
+	</delete>
+	
+	<!-- 댓글 등록하기 -->
+	<insert id="insertReply" parameterType="BoardReply">
+		insert into Reply (replyNo, replyText, userId, replyRegDate, boardNo)
+		values (seq_replyNo.nextval, #{replyText}, #{userId}, sysdate, #{boardNo})
+	</insert>
+
+	<!-- 댓글 가져오기 -->
+	<select id="replyList" parameterType="int" resultType="BoardReply">
+	select * from reply
+	where boardNo = #{boradNo}
+	order by replyRegDate asc
+	</select>
+	
+	<!-- 댓글 삭제하기 -->
+	<delete id="deleteReply" parameterType="int">
+	delete reply
+	where replyNo = #{replyNo}
+	</delete>
+	
+	
+	<!-- 댓글 수정하기 -->
+	<update id="updateReply" parameterType="BoardReply">
+		update reply
+		set replyText = #{replyText} 
+		where boardNo = #{boardNo} and replyNo = #{replyNo} and userId = #{userId}
+	</update>
+	
+</mapper>

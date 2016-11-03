@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.buyingliving.app.persistence.MessageDAO">
+
+	<insert id="sendMsg" parameterType="Message">
+		insert into Message(msgNo,
+		sendId, receiveId, msgText, msgRegdate)
+		values(msg_seq.nextval,#{sendId},#{receiveId},#{msgText},sysdate)
+
+	</insert>
+
+	<select id="selectOneMsgBox" parameterType="HashMap" resultType="Message">
+		select * from Message where (sendId = #{sendId} and receiveId =
+		#{receiveId} ) OR (sendId = #{receiveId} AND receiveId = #{sendId})
+		AND sendIDdel = 'N' order by msgNo asc
+	</select>
+	<update id="readStatus" parameterType="Map">
+		update Message set read =
+		'Y' where sendId = #{receiveId} and
+		receiveId =
+		#{sendId}
+	</update>
+
+	<select id="messageBox" parameterType="String" resultType="Message">
+	     select * from (select * from message where msgno in (select max(msgno)
+      m from message
+      where receiveId in (select distinct receiveId from
+      message where
+      sendId = #{sendId}) or receiveId =#{sendId} group by
+      receiveID )) where sendIDdel
+      = 'N' order by msgregdate desc
+	</select>
+
+	<select id="findMsg" parameterType="Map" resultType="Message">
+		select *
+		from message where sendId = #{sendId} and receiveId =#{receiveId} and
+		msgText = #{msgText}
+	</select>
+
+	<update id="delMyMessage" parameterType="Map">
+		update Message set sendIdDel = 'Y' where sendId = #{sendId} and
+		receiveId = #{receiveId}
+		<if test="msgNo != 0"> <!-- 메시지 함 지우는 게 아니라 특정메시지 지우는 것 -->
+			and msgNo = #{msgNo}
+		</if>
+	</update>
+
+	<select id="newMSGcheck" parameterType="String" resultType="Message">
+		SELECT * FROM message WHERE receiveID=#{loginId} AND read = 'N'
+	</select>
+
+</mapper>

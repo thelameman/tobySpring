@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.buyingliving.app.persistence.BrokerDAO">
+	<select id="selectAllBroker" resultType="Broker">
+		select * from broker
+	</select>
+
+	<insert id="insertBroker" parameterType="Broker">
+		insert into
+		broker(brokerId, name, password, officeName, address, email,
+		officeTel, phone, approval)
+		values
+		(#{brokerId},#{name},#{password},#{officeName},#{address},#{email},#{officeTel},#{phone},
+		'N')
+	</insert>
+
+	<update id="updateBroker" parameterType="Broker">
+		update broker set
+		password=#{password},email=#{email},officeTel=#{officeTel},
+		phone=#{phone}
+		where brokerId = #{brokerId}
+	</update>
+
+	<select id="selectOneBroker" resultType="Broker">
+		select * from broker
+		where brokerId = #{brokerId}
+	</select>
+	<select id="brokerPic" resultType="Pictures" parameterType="String">
+		select * from pictures where category='broker' and
+		brokerid=#{brokerId}
+	</select>
+
+</mapper>

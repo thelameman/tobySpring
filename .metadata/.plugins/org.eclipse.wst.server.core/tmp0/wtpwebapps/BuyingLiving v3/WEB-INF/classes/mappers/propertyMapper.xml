@@ -1,0 +1,174 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.buyingliving.app.persistence.PropertyDAO">
+
+	<select id="selectAllProperty" resultType="Property_map">
+		select * from
+		property_total where approval = 'Y'
+		order by propertyno asc
+	</select>
+
+
+	<select id="searchProperty" resultType="Ptotal" parameterType="map">
+		select *
+		from property_total where area &lt;= #{e_area}*3.305785 and
+		area
+		&gt;=
+		#{s_area}*3.30578
+		and
+		price
+		&gt;= #{s_price}
+		and price &lt;=
+		#{e_price}
+		<if test="builtType!=null">
+			and builttype=#{builtType}
+		</if>
+		<if test="propertyType!=null">
+			and propertytype=#{propertyType}
+		</if>
+		<if test="keyword!=null">
+			and (address like '%'||#{keyword}||'%' or danji like
+			'%'||#{keyword}||'%' or content like '%'||#{keyword}||'%')
+		</if>
+		and approval = 'Y'
+		order by propertyno asc
+	</select>
+
+	<select id="distance" resultType="Ptotal" parameterType="map">
+		select
+		* from property_total where lati &gt;
+		#{x}-0.0075001875046876*#{arriveTime}*0.3 and lati &lt;
+		#{x}+0.0075001875046876*#{arriveTime}*0.3 and longti &gt;
+		#{y}-0.0090000009000001*#{arriveTime}*0.3 and longti &lt;
+		#{y}+0.0090000009000001*#{arriveTime}*0.3 and area &lt;=
+		#{e_area}*3.305785 and
+		area
+		&gt;=
+		#{s_area}*3.305785
+		and
+		price
+		&gt;=
+		#{s_price}
+		and price &lt;=
+		#{e_price}
+		<if test="builtType!=null">
+			and builttype=#{builtType}
+		</if>
+		<if test="propertyType!=null">
+			and propertytype=#{propertyType}
+		</if>
+		<if test="keyword!=null">
+			and (address like '%'||#{keyword}||'%' or danji like
+			'%'||#{keyword}||'%' or content like '%'||#{keyword}||'%')
+		</if>
+		and approval = 'Y'
+		order by propertyno asc
+	</select>
+
+	<select id="clickSearch" resultType="Ptotal" parameterType="map">
+		select * from property_total where lati=#{x} and
+		longti=#{y}
+		<if test="builtType!=null">
+			and builttype=#{builtType}
+		</if>
+		<if test="propertyType!=null">
+			and propertytype=#{propertyType}
+		</if>
+		and area &lt;= #{e_area}*3.305785 and area
+		&gt;=
+		#{s_area}*3.30578
+		and
+		price
+		&gt;= #{s_price}
+		and price &lt;=
+		#{e_price} order by propertyno
+		asc
+	</select>
+
+
+	<select id="selectProperty_total" resultType="Ptotal"
+		parameterType="int">
+		select * from property_total where
+		propertyno=#{propertyNo}
+	</select>
+
+	<select id="changeOverlay" parameterType="map" resultType="Ptotal">
+		select * from property_total where lati=#{x} and longti=#{y} and
+		approval = 'Y' order by
+		propertyno asc
+	</select>
+
+
+	<!-- 새로운 매물 등록 -->
+
+	<insert id="insertProperty" parameterType="Ptotal">
+		INSERT INTO
+		property_total VALUES(
+		#{propertyNo}, #{sellerId}, #{address},
+		#{danji}, #{propertyType}, #{builtType},
+		#{price}, #{monthfee},
+		#{area}, #{land_area}, #{lati}, #{longti},
+		#{floor}, sysdate,
+		#{movedate}, #{detailaddr}, #{builtyear}, #{maintenance},
+		#{roomoption}, #{title}, #{content}, #{clickcount}, #{approval},
+		#{pic_temp}, #{pic}
+		)
+	</insert>
+
+	<insert id="insertPic" parameterType="Pictures">
+		INSERT INTO
+		pictures(
+		picno,pic,pic_temp,category,propertyno, brokerId
+		)
+		VALUES
+		(seq_pic.nextval, #{pic},
+		#{pic_temp}, #{category}, #{propertyNo},
+		#{brokerId} )
+	</insert>
+
+	<select id="sequence" resultType="int">
+		SELECT property_seq.nextval as
+		propertyNo from dual
+	</select>
+
+	<!-- 매물 수정하기 -->
+	<update id="updateProperty" parameterType="Ptotal">
+		update property_total
+		set
+		address = #{address},
+		danji = #{danji},
+		propertyType =
+		#{propertyType},
+		builtType = #{builtType},
+		price = #{price},
+		monthfee =
+		#{monthfee},
+		area = #{area},
+		land_area = #{land_area},
+		lati = #{lati},
+		longti = #{longti},
+		floor = #{floor},
+		movedate = #{movedate},
+		detailaddr
+		= #{detailaddr},
+		builtyear = #{builtyear},
+		maintenance = #{maintenance},
+		roomoption = #{roomoption},
+		title = #{title},
+		content = #{content}
+
+		where
+		propertyno = #{propertyNo}
+	</update>
+
+
+	<!-- 매물 삭제하기 -->
+	<delete id="deleteProperty" parameterType="map">
+		delete property_total
+		where sellerId = #{sellerId} and propertyNo = #{propertyNo}
+	</delete>
+
+
+</mapper>
